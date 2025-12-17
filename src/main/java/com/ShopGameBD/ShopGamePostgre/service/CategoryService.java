@@ -3,6 +3,8 @@ package com.ShopGameBD.ShopGamePostgre.service;
 import com.ShopGameBD.ShopGamePostgre.dto.CategoryDTO;
 import com.ShopGameBD.ShopGamePostgre.dto.CategoryRequestDTO;
 import com.ShopGameBD.ShopGamePostgre.entity.Category;
+import com.ShopGameBD.ShopGamePostgre.exception.CategoryAlreadyExistException;
+import com.ShopGameBD.ShopGamePostgre.exception.CategoryNotFound;
 import com.ShopGameBD.ShopGamePostgre.repository.CategoryRepository;
 import org.springframework.stereotype.Service;
 
@@ -44,7 +46,7 @@ public class CategoryService {
 
     public CategoryDTO createCategory(CategoryRequestDTO dto){
         categoryRepository.findByName(dto.getName()).ifPresent(category -> {
-            throw new RuntimeException("Categoria no encontrada"+dto.getName());
+            throw new CategoryAlreadyExistException("Ya hay una categoria con ese nombre: "+dto.getName());
         });
 
         Category addCategoryBD = dtoToCategory(dto);
@@ -55,7 +57,7 @@ public class CategoryService {
 
     public CategoryDTO patchCategory(Integer id, CategoryRequestDTO newData){
         Category existing = categoryRepository.findById(id).
-                orElseThrow(() -> new RuntimeException("Categoria no encontrada"));
+                orElseThrow(() -> new CategoryNotFound("Categoria no encontrada: "+newData.getName()));
 
         if(newData.getName() != null){
             existing.setName(newData.getName());
@@ -68,7 +70,7 @@ public class CategoryService {
 
     public String deleteCategory(Integer id){
         Category existing = categoryRepository.findById(id).
-                orElseThrow(()-> new RuntimeException("No se encontro la categoria"));
+                orElseThrow(()-> new CategoryNotFound("No se encontro la categoria"));
 
         String nameCategory = existing.getName();
 

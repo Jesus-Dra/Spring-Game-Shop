@@ -37,6 +37,15 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
 
+    @ExceptionHandler(CategoryAlreadyExistException.class)
+    public ResponseEntity<ApiError> handleCategoryAlreadyExistsException
+            (CategoryAlreadyExistException ex, HttpServletRequest request){
+        ApiError error = new ApiError(HttpStatus.CONFLICT
+                .value(), "Conflict", ex.getMessage(), request.getRequestURI());
+
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+    }
+
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<ApiError> handleIntegrity(
             DataIntegrityViolationException ex, HttpServletRequest request
